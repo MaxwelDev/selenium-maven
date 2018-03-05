@@ -5,9 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
@@ -17,15 +16,33 @@ public class SeleniumMavenApplicationTests {
 
     @Before
     public void iniciaNavegador() {
-        System.setProperty("webdriver.chrome.driver", "/home/peo_msilva/Documents/stash/chromedriver");
+        if (System.getProperty("phantomjs.binary.path") != null) {
+
+            iniciaPhantomJs();
+
+        } else if (System.getProperty("webdriver.chrome.driver") != null) {
+
+            iniciaChrome();
+        } else {
+
+            throw new RuntimeException("Nao eh possivel determinar o navegador para execucao dos testes.");
+
+        }
+
     }
 
 	@Test
 	public void contextLoads() {
-        iniciaChrome();
+
 	}
 
     private void iniciaChrome() {
         driver = new ChromeDriver();
+    }
+
+    private void iniciaPhantomJs() {
+        DesiredCapabilities dc = new DesiredCapabilities();
+        dc.setJavascriptEnabled(true);
+        driver = new PhantomJSDriver(dc);
     }
 }
